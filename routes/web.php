@@ -23,7 +23,7 @@ Route::middleware(['user.auth'])->group(function () {
 
     Route::get('/user/friends', [FriendController::class, 'index'])->name('user.friends');
     Route::post('/user/friends/send/{id}', [FriendController::class, 'sendRequest'])->name('friends.send');
-    Route::post('/user/friends/respond/{id}/{status}', [FriendController::class, 'respondToSameCity'])->name('friends.respond');
+    // Route::post('/user/friends/respond/{id}/{status}', [FriendController::class, 'respondToSameCity'])->name('friends.respond');
     Route::post('/user/friends/accept/{id}', [FriendController::class, 'acceptRequest'])->name('friends.accept');
     Route::post('/user/friends/ignore/{id}', [FriendController::class, 'ignoreRequest'])->name('friends.ignore');
 });

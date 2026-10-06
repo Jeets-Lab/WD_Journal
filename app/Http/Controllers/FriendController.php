@@ -89,47 +89,11 @@ class FriendController extends Controller
         return redirect()->route('user.friends');
     }
 
-    public function respondToSameCity($id, $status)
-    {
-        $user = User::findOrFail(session('user_id'));
-
-        if (!in_array($status, ['accepted', 'ignored'])) {
-            abort(400);
-        }
-
-        $otherUser = User::findOrFail($id);
-
-        // Do not allow responding to yourself.
-        if ($otherUser->id == $user->id) {
-            return redirect()->route('user.friends');
-        }
-
-        // Practical 2 Section A is for users from the same city.
-        if ($otherUser->city !== $user->city) {
-            abort(403);
-        }
-
-        $relationship = $this->findRelationship($user->id, $otherUser->id);
-
-        if ($relationship) {
-            $relationship->status = $status;
-            $relationship->save();
-        } else {
-            Friend::create([
-                'userid'        => $user->id,
-                'friend_userid' => $otherUser->id,
-                'status'        => $status,
-            ]);
-        }
-
-        return redirect()->route('user.friends');
-    }
-
     public function acceptRequest($id)
     {
         $user = User::findOrFail(session('user_id'));
 
-        $friendRequest = Friend::where('id', $id)
+        $friendRequest = Friend::where('userid', $id) // $id is the sender's User ID
             ->where('friend_userid', $user->id)  // must be the receiver
             ->where('status', 'pending')
             ->firstOrFail();
@@ -144,13 +108,19 @@ class FriendController extends Controller
     {
         $user = User::findOrFail(session('user_id'));
 
-        $friendRequest = Friend::where('id', $id)
-            ->where('friend_userid', $user->id)  // must be the receiver
-            ->where('status', 'pending')
-            ->firstOrFail();
+        $relationship = $this->findRelationship($user->id, $id);
 
-        $friendRequest->status = 'ignored';
-        $friendRequest->save();
+        if ($relationship) {
+            $relationship->status = 'ignored';
+            $relationship->save();
+        } else {
+            // Proactive ignore when there is no existing relationship
+            Friend::create([
+                'userid'        => $user->id,
+                'friend_userid' => $id,
+                'status'        => 'ignored',
+            ]);
+        }
 
         return redirect()->route('user.friends');
     }

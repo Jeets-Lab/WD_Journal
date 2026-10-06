@@ -29,13 +29,13 @@
                     <button type="button" disabled>Pending</button>
 
                     <form method="POST"
-                          action="{{ route('friends.respond', [$person->id, 'accepted']) }}"
+                          action="{{ route('friends.accept', $person->id) }}"
                           style="display:inline;">
                         @csrf
                         <button type="submit">Accept</button>
                     </form>
                     <form method="POST"
-                          action="{{ route('friends.respond', [$person->id, 'ignored']) }}"
+                          action="{{ route('friends.ignore', $person->id) }}"
                           style="display:inline;">
                         @csrf
                         <button type="submit">Ignore</button>
@@ -75,12 +75,12 @@
             <p>
                 <strong>{{ $request->sender->name }}</strong> ({{ $request->sender->username }})
 
-                <form method="POST" action="{{ route('friends.accept', $request->id) }}" style="display:inline;">
+                <form method="POST" action="{{ route('friends.accept', $request->sender->id) }}" style="display:inline;">
                     @csrf
                     <button type="submit">Accept</button>
                 </form>
 
-                <form method="POST" action="{{ route('friends.ignore', $request->id) }}" style="display:inline;">
+                <form method="POST" action="{{ route('friends.ignore', $request->sender->id) }}" style="display:inline;">
                     @csrf
                     <button type="submit">Ignore</button>
                 </form>
